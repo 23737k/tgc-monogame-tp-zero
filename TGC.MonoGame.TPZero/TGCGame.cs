@@ -26,7 +26,7 @@ namespace TGC.MonoGame.TP
         //Agrego las matrices del auto: World, Rotation
         private Effect CarEffect { get; set; }
         private Matrix CarWorld { get; set; }
-        private float CarlRotation { get; set; }}
+        private float CarRotation { get; set; }
         private FollowCamera FollowCamera { get; set; }
 
 
@@ -85,6 +85,7 @@ namespace TGC.MonoGame.TP
 
             //Cargo el modelo del auto
             CarModel = Content.Load<Model>(ContentFolder3D + "scene/car");
+            CarEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader"); //Esto siempre se pone, sino tira segmentation fault. No se porque. Preguntar en el foro
 
             base.LoadContent();
         }
@@ -95,7 +96,7 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void Update(GameTime gameTime)
         {
-            // Caputo el estado del teclado.
+            // Capturo el estado del teclado.
             var keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.Escape))
             {
@@ -128,7 +129,7 @@ namespace TGC.MonoGame.TP
 
             foreach (var mesh in CarModel.Meshes)
             {
-                Effect.Parameters["World"].SetValue(CarWorld);
+                CarEffect.Parameters["World"].SetValue(CarWorld);
                 mesh.Draw();
             }
 
@@ -146,4 +147,5 @@ namespace TGC.MonoGame.TP
             base.UnloadContent();
         }
     }
+   
 }
