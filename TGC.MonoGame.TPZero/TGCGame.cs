@@ -22,7 +22,11 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private CityScene City { get; set; }
         private Model CarModel { get; set; }
+
+        //Agrego las matrices del auto: World, Rotation
+        private Effect CarEffect { get; set; }
         private Matrix CarWorld { get; set; }
+        private float CarlRotation { get; set; }}
         private FollowCamera FollowCamera { get; set; }
 
 
@@ -59,7 +63,7 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
             Graphics.ApplyChanges();
 
-            // Creo una camaar para seguir a nuestro auto.
+            // Creo una camara para seguir a nuestro auto.
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
 
             // Configuro la matriz de mundo del auto.
@@ -119,6 +123,14 @@ namespace TGC.MonoGame.TP
 
             // Dibujo la ciudad.
             City.Draw(gameTime, FollowCamera.View, FollowCamera.Projection);
+
+            //Dibujo cada uno de los meshes del modelo del auto. AKA: dibujo al auto
+
+            foreach (var mesh in CarModel.Meshes)
+            {
+                Effect.Parameters["World"].SetValue(CarWorld);
+                mesh.Draw();
+            }
 
             base.Draw(gameTime);
         }
