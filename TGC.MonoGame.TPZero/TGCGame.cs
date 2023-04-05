@@ -79,6 +79,9 @@ namespace TGC.MonoGame.TP
 
             // La carga de contenido debe ser realizada aca.
 
+            //Cargo el modelo del auto
+            CarModel = Content.Load<Model>(ContentFolder3D + "scene/car");
+
             base.LoadContent();
         }
 
@@ -116,8 +119,6 @@ namespace TGC.MonoGame.TP
 
             // Dibujo la ciudad.
             City.Draw(gameTime, FollowCamera.View, FollowCamera.Projection);
-
-            // El dibujo del auto debe ir aca.
 
             base.Draw(gameTime);
         }
