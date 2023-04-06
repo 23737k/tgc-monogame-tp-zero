@@ -67,7 +67,7 @@ namespace TGC.MonoGame.TP
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
 
             // Configuro la matriz de mundo del auto.
-            CarWorld = Matrix.Identity;
+            CarWorld = Matrix.Identity ;
 
             base.Initialize();
         }
@@ -125,13 +125,8 @@ namespace TGC.MonoGame.TP
             // Dibujo la ciudad.
             City.Draw(gameTime, FollowCamera.View, FollowCamera.Projection);
 
-            //Dibujo cada uno de los meshes del modelo del auto. AKA: dibujo al auto
-
-            foreach (var mesh in CarModel.Meshes)
-            {
-                CarEffect.Parameters["World"].SetValue(CarWorld);
-                mesh.Draw();
-            }
+            //Por ahora se dibuja asi. La matriz vista es del auto, las de vista y proyeccion son las de la camara.
+            CarModel.Draw(CarWorld,FollowCamera.View, FollowCamera.Projection);
 
             base.Draw(gameTime);
         }
