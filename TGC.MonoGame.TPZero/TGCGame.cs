@@ -26,7 +26,6 @@ namespace TGC.MonoGame.TP
         //Agrego las matrices del auto: World, Rotation
         private Effect CarEffect { get; set; }
         private Matrix CarWorld { get; set; }
-        private float CarRotation { get; set; }
         private FollowCamera FollowCamera { get; set; }
 
 
@@ -69,6 +68,9 @@ namespace TGC.MonoGame.TP
             // Configuro la matriz de mundo del auto.
             CarWorld = Matrix.Identity ;
 
+            //inicializo me headVector
+            headVector= new Vector3(0f,0f,1f);
+
             base.Initialize();
         }
 
@@ -94,19 +96,64 @@ namespace TGC.MonoGame.TP
         ///     Es llamada N veces por segundo. Generalmente 60 veces pero puede ser configurado.
         ///     La logica general debe ser escrita aca, junto al procesamiento de mouse/teclas.
         /// </summary>
+
+
+        private Vector3 headVector;     //vector que apunta a la parte delantera del auto
         protected override void Update(GameTime gameTime)
         {
+            Matrix Rotation= Matrix.Identity;       //La matriz identidad hace que al multiplicarla por otra no afecte el resultado -> no hay rotacion
+            float speed=0;
             // Capturo el estado del teclado.
             var keyboardState = Keyboard.GetState();
+            var time= Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
+            
+            
             if (keyboardState.IsKeyDown(Keys.Escape))
             {
                 // Salgo del juego.
                 Exit();
             }
 
-            // La logica debe ir aca.
+            if(keyboardState.IsKeyDown(Keys.Space))
+            {
 
-            // Actualizo la camara, enviandole la matriz de mundo del auto.
+            }
+
+            if(keyboardState.IsKeyDown(Keys.W))
+                speed= -300*time;
+
+            if(keyboardState.IsKeyDown(Keys.S))
+                speed= 300*time;
+
+            if(keyboardState.IsKeyDown(Keys.A))
+            {
+                Vector3 position= CarWorld.Translation;             //Guardo la posicion actual del auto
+                Rotation = Matrix.CreateTranslation(-position) *    //Me desplazo al origen
+                         Matrix.CreateRotationY(time) *             //roto
+                         Matrix.CreateTranslation(position);        //regreso a la posicion original
+                
+                Matrix rotationMatrix = Matrix.CreateRotationY(time);                   //Creo una matriz de rotacion con la rotacion anterior
+                Vector3 rotatedVector = Vector3.Transform(headVector, rotationMatrix);  //A partir del headVector y la matriz rotada obtengo un nuevo vector rotado
+                headVector= Vector3.Normalize(rotatedVector);                           //Le asigno a headVector el nuevo vector rotado y lo normalizo (para que tenga modulo unitario)
+                
+            }                 
+            if(keyboardState.IsKeyDown(Keys.D))
+            {
+                Vector3 position= CarWorld.Translation;
+                Rotation = Matrix.CreateTranslation(-position) *
+                         Matrix.CreateRotationY(-time) *
+                         Matrix.CreateTranslation(position);
+                
+                Matrix rotationMatrix = Matrix.CreateRotationY(-time);
+                Vector3 rotatedVector = Vector3.Transform(headVector, rotationMatrix);
+                headVector= Vector3.Normalize(rotatedVector);
+            }
+           
+            
+            CarWorld *= Matrix.CreateTranslation(headVector*speed)*Rotation;    //Me desplazo y roto. 
+
+            //Matrix.CreateFromQuaternion(quaternion) ;
+
             FollowCamera.Update(gameTime, CarWorld);
 
             base.Update(gameTime);
