@@ -99,10 +99,12 @@ namespace TGC.MonoGame.TP
 
 
         private Vector3 headVector;     //vector que apunta a la parte delantera del auto
+        float speed=0;          //Velocidad inicial 0
+        float acceleration= 0.1f;   //aceleracion. Valor arbitrario utilizado para acelerar el auto y frenarlo por friccion
         protected override void Update(GameTime gameTime)
         {
             Matrix Rotation= Matrix.Identity;       //La matriz identidad hace que al multiplicarla por otra no afecte el resultado -> no hay rotacion
-            float speed=0;
+            
             // Capturo el estado del teclado.
             var keyboardState = Keyboard.GetState();
             var time= Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
@@ -120,10 +122,31 @@ namespace TGC.MonoGame.TP
             }
 
             if(keyboardState.IsKeyDown(Keys.W))
-                speed= -300*time;
+            {
+                if(speed>-20)           //Mientras no se supere cierto valor de velocidad, se acelera el auto
+                    speed-=acceleration;
+            }
+                
 
             if(keyboardState.IsKeyDown(Keys.S))
-                speed= 300*time;
+            {
+                if(speed<20)   
+                    speed+=acceleration;
+                if(speed<0)                             //Esto es para frenar. Como necesito que frene rapido, aumento la desaceleracion
+                    speed= speed + 5*acceleration;
+            }
+                
+            //Esto se cumple cuando no se esta acelerando el auto en ninguna direccion y la velocidad es distinta de cero
+            if(!keyboardState.IsKeyDown(Keys.W) &&  !keyboardState.IsKeyDown(Keys.S) && speed!=0)   
+            {
+                if (speed > 0)
+                    speed-=acceleration;
+                else
+                    speed+=acceleration;
+                //Esto es debido a que desacelerando puede que nos pasemos de 0. Por eso establezco un rango cercano a cero en el cual el auto directamente frena
+                if(speed>-0.01 && speed<0.01)
+                    speed=0;
+            }
 
             if(keyboardState.IsKeyDown(Keys.A))
             {
