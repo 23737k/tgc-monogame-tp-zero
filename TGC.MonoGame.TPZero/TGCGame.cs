@@ -149,10 +149,7 @@ namespace TGC.MonoGame.TP
                 headVector= Vector3.Normalize(rotatedVector);
             }
            
-            
             CarWorld *= Matrix.CreateTranslation(headVector*speed)*Rotation;    //Me desplazo y roto. 
-
-            //Matrix.CreateFromQuaternion(quaternion) ;
 
             FollowCamera.Update(gameTime, CarWorld);
 
